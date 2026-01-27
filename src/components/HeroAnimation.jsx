@@ -9,12 +9,11 @@ const HeroAnimation = () => {
     const canvasRef = useRef(null);
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const imagesRef = useRef([]);
-    const requestRef = useRef();
     const frameIndexRef = useRef(0);
-    const fps = 24; // Target frames per second
-    const nowRef = useRef(0);
-    const thenRef = useRef(0);
-    const interval = 1000 / fps;
+    const requestRef = useRef();
+
+    // Touch handling state
+    const touchStartY = useRef(null);
 
     useEffect(() => {
         // Preload images
@@ -46,7 +45,7 @@ const HeroAnimation = () => {
     const drawFrame = (ctx, img, canvas) => {
         if (!img || !canvas) return;
 
-        // Calculate aspect ratio to cover the canvas (like background-size: cover)
+        // Calculate aspect ratio to cover
         const hRatio = canvas.width / img.width;
         const vRatio = canvas.height / img.height;
         const ratio = Math.max(hRatio, vRatio);
@@ -55,7 +54,6 @@ const HeroAnimation = () => {
         const centerShift_y = (canvas.height - img.height * ratio) / 2;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Draw image centered and covering the canvas
         ctx.drawImage(
             img,
             0, 0, img.width, img.height,
@@ -63,83 +61,92 @@ const HeroAnimation = () => {
         );
     };
 
-    const updateFrame = () => {
-        if (!canvasRef.current || !imagesLoaded || !imagesRef.current.length) return;
-
-        // Calculate scroll progress relative to the hero section (approx 500vh)
-        const scrollTop = window.scrollY;
-        const maxScroll = window.innerHeight * 4; // 500vh total height - 100vh viewport = 400vh scrollable
-
-        // Clamp progress between 0 and 1
-        const progress = Math.min(Math.max(scrollTop / maxScroll, 0), 1);
-
-        // Calculate frame index
-        const frameIndex = Math.min(
-            Math.floor(progress * (frameCount - 1)),
-            frameCount - 1
-        );
-
-        if (frameIndex !== frameIndexRef.current) {
-            frameIndexRef.current = frameIndex;
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext('2d');
-            const img = imagesRef.current[frameIndex];
-            drawFrame(ctx, img, canvas);
-        }
-
-        requestRef.current = requestAnimationFrame(updateFrame);
-    };
-
-    // Virtual Scroll Logic
+    // Main Interaction Logic (Wheel + Touch)
     useEffect(() => {
         if (!imagesLoaded) return;
 
-        const handleWheel = (e) => {
+        const handleInteraction = (deltaY, event) => {
             const scrollY = window.scrollY;
-            const isAtTop = scrollY === 0;
+            const isAtTop = scrollY < 5; // Tolerance for mobile bounce
 
-            // Only hijack scroll if we are at the top of the page
-            if (isAtTop) {
-                // Calculate frame delta
-                // Sensitivity: 0.1 frame per pixel of scroll
-                const sensitivity = 0.2;
-                const delta = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 100) * sensitivity;
+            // Determine if we should hijack the scroll calculation
+            const isAnimationRunning = frameIndexRef.current < frameCount - 1;
+            const isReversingAtEnd = frameIndexRef.current >= frameCount - 1 && deltaY < 0;
 
-                const newIndex = Math.min(Math.max(frameIndexRef.current + delta, 0), frameCount - 1);
+            // Only hijack if we are at the top AND (animating in progress OR user is trying to scroll back up)
+            if (isAtTop && (isAnimationRunning || isReversingAtEnd)) {
+                // Prevent default page scroll
+                if (event.cancelable) event.preventDefault();
 
-                // Determine lock state
-                // Lock if: Not at the end OR (At end and scrolling up)
-                const isAnimationActive = frameIndexRef.current < frameCount - 1;
-                const isScrollingUpAtEnd = frameIndexRef.current >= frameCount - 1 && e.deltaY < 0;
+                // Sensitivity factor (Touch needs slightly higher sensitivity than wheel sometimes, but consistent is good)
+                const sensitivity = 0.25;
 
-                if (isAnimationActive || isScrollingUpAtEnd) {
-                    e.preventDefault(); // BLOCK SCROLL
+                // Calculate new frame index
+                // deltaY > 0 means scrolling/swiping DOWN (Progress forward)
+                // deltaY < 0 means scrolling/swiping UP (Progress backward)
+                const moveAmount = deltaY * sensitivity;
 
-                    frameIndexRef.current = newIndex;
+                const newIndex = Math.min(Math.max(frameIndexRef.current + moveAmount, 0), frameCount - 1);
 
-                    if (canvasRef.current) {
-                        const ctx = canvasRef.current.getContext('2d');
-                        const img = imagesRef.current[Math.floor(frameIndexRef.current)];
-                        if (img) drawFrame(ctx, img, canvasRef.current);
-                    }
+                frameIndexRef.current = newIndex;
+
+                // Draw the new frame
+                if (canvasRef.current) {
+                    const ctx = canvasRef.current.getContext('2d');
+                    const img = imagesRef.current[Math.floor(frameIndexRef.current)];
+                    if (img) drawFrame(ctx, img, canvasRef.current);
                 }
             }
         };
 
-        // Passive: false is crucial for preventDefault
-        window.addEventListener('wheel', handleWheel, { passive: false });
+        const handleWheel = (e) => {
+            handleInteraction(e.deltaY, e);
+        };
 
-        // Initial draw
+        const handleTouchStart = (e) => {
+            if (e.touches.length === 1) {
+                touchStartY.current = e.touches[0].clientY;
+            }
+        };
+
+        const handleTouchMove = (e) => {
+            if (touchStartY.current === null) return;
+
+            const currentY = e.touches[0].clientY;
+            // Calculate delta: Previous Y - Current Y
+            // Drag Up (Finger moves up) = currentY < startY = Positive Delta = Scroll Down
+            const deltaY = touchStartY.current - currentY;
+
+            handleInteraction(deltaY, e);
+
+            // Update startY for continuous delta calculation
+            touchStartY.current = currentY;
+        };
+
+        const handleTouchEnd = () => {
+            touchStartY.current = null;
+        };
+
+        // Attach listeners with passive: false to allow preventDefault
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+
+        // Initial Draw
         if (canvasRef.current && imagesRef.current[0]) {
             drawFrame(canvasRef.current.getContext('2d'), imagesRef.current[0], canvasRef.current);
         }
 
         return () => {
             window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [imagesLoaded]);
 
-    // Simple resize handler without loop dependency
+    // Resize Handler
     useEffect(() => {
         const handleResize = () => {
             if (canvasRef.current) {
