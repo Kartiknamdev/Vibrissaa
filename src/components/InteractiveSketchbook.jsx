@@ -31,6 +31,7 @@ const localArtworks = [
 const InteractiveSketchbook = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isGridOpen, setIsGridOpen] = useState(false);
 
     // Fetch remote data
     const { data: remoteArtworks, loading } = useContentful();
@@ -45,6 +46,7 @@ const InteractiveSketchbook = () => {
             setCurrentIndex(0);
         }
     }, [artworks, currentIndex]);
+
 
     // --- 3D Tilt Logic ---
     const handleMouseMove = (e) => {
@@ -113,6 +115,13 @@ const InteractiveSketchbook = () => {
         setCurrentIndex((prev) => (prev - 1 + artworks.length) % artworks.length);
     };
 
+    const toggleGrid = () => setIsGridOpen(!isGridOpen);
+
+    const handleGridSelect = (index) => {
+        setCurrentIndex(index);
+        setIsGridOpen(false);
+    };
+
     return (
         <div className="sketchbook-section">
             {/* Structural Glass Backdrop */}
@@ -125,6 +134,11 @@ const InteractiveSketchbook = () => {
                     <h3 className="sketch-title">{currentArt?.title}</h3>
                     <p className="sketch-description">{currentArt?.description}</p>
                     {loading && <p style={{ opacity: 0.5, fontSize: '0.8rem', marginTop: 'var(--spacing-md)' }}>Loading from Contentful...</p>}
+
+                    {/* Grid Trigger */}
+                    <button className="view-grid-btn" onClick={toggleGrid}>
+                        <span className="grid-icon">▦</span> View Collection
+                    </button>
                 </div>
 
                 {/* Right/Center Panel: Sketchbook */}
@@ -165,6 +179,24 @@ const InteractiveSketchbook = () => {
                     </div>
                 </div>
 
+            </div>
+
+            {/* Fluid Grid Overlay */}
+            <div className={`grid-overlay ${isGridOpen ? 'open' : ''}`}>
+                <button className="close-grid" onClick={toggleGrid}>×</button>
+                <div className="grid-content">
+                    {artworks.map((art, index) => (
+                        <div
+                            key={art.id || index}
+                            className="grid-item"
+                            onClick={() => handleGridSelect(index)}
+                            style={{ animationDelay: `${index * 0.05}s` }}
+                        >
+                            <img src={art.image} alt={art.title} />
+                            <span className="grid-title">{art.title}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

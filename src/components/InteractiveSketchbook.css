@@ -208,6 +208,19 @@
     object-fit: cover;
     border-radius: 4px;
     opacity: 0.98;
+    animation: pageFade 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+@keyframes pageFade {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Navigation Controls - Minimal Futurist */
@@ -361,20 +374,172 @@
         transform: none !important;
     }
 
-    /* Simplified navigation for touch */
+    /* Simplified navigation for touch - HIDDEN as per request */
     .nav-button {
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.2);
-        /* Always visible on mobile if expanded? Or keep hidden? 
-       Let's keep logic same but size fits better */
+        display: none !important;
     }
+}
 
-    .nav-prev {
-        left: -10px;
-    }
+/* --- View Collection Grid UI --- */
+.view-grid-btn {
+    margin-top: var(--spacing-lg);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--color-gold-primary);
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
 
-    .nav-next {
-        right: -10px;
+.view-grid-btn:hover {
+    background: var(--color-gold-primary);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.grid-icon {
+    font-size: 1.2rem;
+}
+
+/* Fluid Overlay */
+.grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+
+    /* Liquid Glass Effect (True Clear/Wet) */
+    background: radial-gradient(120% 120% at 50% 90%,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.01) 40%,
+            rgba(200, 230, 255, 0.05) 100%);
+    /* Low blur + High Contrast = Wet Look */
+    backdrop-filter: blur(6px) brightness(1.2) contrast(1.1);
+
+    /* Refractive Border & Volume */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    /* Water droplet weight */
+
+    box-shadow:
+        inset 0 4px 20px rgba(255, 255, 255, 0.3),
+        /* Top highlight */
+        inset 0 -10px 40px rgba(0, 0, 0, 0.1),
+        /* Bottom depth */
+        0 20px 50px rgba(0, 0, 0, 0.3);
+    /* External shadow */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* "Tear Drop" Animation Start State */
+    clip-path: circle(0% at 50% 90%);
+    /* Starts at bottom center */
+    pointer-events: none;
+    transition: clip-path 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+    /* Ultra Fluid "Water" Ease */
+}
+
+.grid-overlay.open {
+    clip-path: circle(150% at 50% 90%);
+    pointer-events: auto;
+}
+
+.close-grid {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    background: none;
+    border: none;
+    color: var(--color-gold-primary);
+    font-size: 3rem;
+    cursor: pointer;
+    z-index: 101;
+    transition: transform 0.3s;
+}
+
+.close-grid:hover {
+    transform: rotate(90deg);
+}
+
+.grid-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 100px var(--spacing-xl);
+    display: grid;
+    /* Adapts to count: Items stretch to fill space evenly */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1400px;
+
+    /* Smooth Scroll */
+    scroll-behavior: smooth;
+}
+
+/* Bouncy List Items */
+.grid-item {
+    aspect-ratio: 3/4;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(50px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.grid-overlay.open .grid-item {
+    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bounceIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
+
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.grid-item:hover {
+    transform: scale(1.05);
+    /* Slight lift */
+    border-color: var(--color-gold-primary);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.grid-item:hover img {
+    transform: scale(1.1);
+}
+
+.grid-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    color: white;
+    font-size: 0.9rem;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.grid-item:hover .grid-title {
+    transform: translateY(0);
 }

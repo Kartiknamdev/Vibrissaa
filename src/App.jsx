@@ -89,15 +89,23 @@ function App() {
       <section className="final-cta section">
         <div className="container">
           <div className="final-cta-content">
-            <h2 className="final-cta-title">Begin Your Collection Today</h2>
+            <h2 className="final-cta-title">Curate Your World</h2>
             <p className="final-cta-description">
-              Join an exclusive community of art enthusiasts and collectors.
-              Discover pieces that resonate with your soul.
+              Join our collector's circle. Receive exclusive early access to new releases.
             </p>
-            <div>
-              <button className="cta-button">View Gallery</button>
-              <button className="cta-secondary">Contact Curator</button>
+
+            <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
+              <input type="email" placeholder="Enter your email address" className="newsletter-input" />
+              <button type="submit" className="newsletter-btn">Subscribe</button>
+            </form>
+
+            <div className="footer-links">
+              <span>Instagram</span>
+              <span>Twitter</span>
+              <span>Artsy</span>
             </div>
+
+            <p className="copyright">© 2026 Vibrissa. All rights reserved.</p>
           </div>
         </div>
       </section>
