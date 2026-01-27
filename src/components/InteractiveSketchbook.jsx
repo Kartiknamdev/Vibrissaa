@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './InteractiveSketchbook.css';
 import useContentful from '../hooks/useContentful';
 
@@ -79,13 +79,37 @@ const InteractiveSketchbook = () => {
         }
     };
 
+    const touchStartX = useRef(null);
+    const touchEndX = useRef(null);
+
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e) => {
+        touchEndX.current = null;
+        touchStartX.current = e.targetTouches[0].clientX;
+    };
+
+    const onTouchMove = (e) => {
+        touchEndX.current = e.targetTouches[0].clientX;
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStartX.current || !touchEndX.current) return;
+        const distance = touchStartX.current - touchEndX.current;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) handleNext();
+        if (isRightSwipe) handlePrev();
+    };
+
     const handleNext = (e) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         setCurrentIndex((prev) => (prev + 1) % artworks.length);
     };
 
     const handlePrev = (e) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         setCurrentIndex((prev) => (prev - 1 + artworks.length) % artworks.length);
     };
 
@@ -109,6 +133,9 @@ const InteractiveSketchbook = () => {
                     onClick={handleBookClick}
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
                 >
                     <div className="sketchbook">
                         <img
@@ -125,7 +152,7 @@ const InteractiveSketchbook = () => {
                             <div className="interaction-hint">Click to Open</div>
                         )}
 
-                        {isExpanded && (
+                        {isExpanded && artworks.length > 1 && (
                             <>
                                 <button className="nav-button nav-prev" onClick={handlePrev} aria-label="Previous Artwork">
                                     ←

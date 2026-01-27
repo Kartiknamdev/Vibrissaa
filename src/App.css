@@ -36,7 +36,7 @@
 
   /* Full Screen Glass */
   background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(3px);
   margin: 0;
   border: none;
   border-radius: 0;

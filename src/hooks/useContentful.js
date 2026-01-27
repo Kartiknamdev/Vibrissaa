@@ -53,7 +53,7 @@ const useContentful = () => {
                         description,
                         image: image?.fields?.file?.url ? `https:${image.fields.file.url}` : null,
                     };
-                });
+                }).filter(item => item.image); // Only keep items with valid images
 
                 setData(sanitizedData);
                 setLoading(false);
