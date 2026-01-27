@@ -1,0 +1,380 @@
+.sketchbook-section {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--spacing-xl);
+
+    /* Midnight Aurora Background */
+    background: linear-gradient(125deg,
+            #0aa 0%,
+            #000 30%,
+            #206 60%,
+            #000 100%);
+    background-size: 300% 300%;
+    animation: aurora 20s ease infinite;
+}
+
+@keyframes aurora {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Prismatic Glass Backdrop */
+.glass-backdrop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 85%;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(50px) saturate(150%);
+    /* Prism saturation */
+    border-radius: 16px;
+
+    /* Iridescent Border Effect */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 20px 80px rgba(0, 0, 0, 0.6),
+        inset 0 0 40px rgba(255, 255, 255, 0.02);
+
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Subtle rainbow glow on edges */
+.glass-backdrop::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(0, 255, 0, 0.1), rgba(0, 0, 255, 0.1));
+    z-index: -1;
+    border-radius: 16px;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+}
+
+.sketchbook-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+    height: 600px;
+    z-index: 5;
+}
+
+/* Description Typography */
+.description-panel {
+    flex: 1;
+    padding-right: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
+    transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+    pointer-events: none;
+}
+
+.description-panel.visible {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+}
+
+.sketch-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    /* Bigger */
+    background: linear-gradient(90deg, #d4af37, #f8f1d1);
+    /* Gradient Text */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--spacing-md);
+    letter-spacing: -0.02em;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+.sketch-description {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    max-width: 420px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+}
+
+/* Sketchbook (Right/Center) */
+.sketchbook-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translateX(-50%);
+    perspective: 1200px;
+}
+
+.sketchbook-wrapper.expanded {
+    transform: translateX(0);
+}
+
+/* Default tilt variables */
+.sketchbook-wrapper {
+    --tx: 0deg;
+    --ty: 0deg;
+    --mx: 50%;
+    --my: 50%;
+}
+
+.sketchbook {
+    position: relative;
+    width: 450px;
+    height: 600px;
+    background: #111;
+    border-radius: 4px;
+    cursor: pointer;
+
+    transform-style: preserve-3d;
+    transform: rotateX(var(--tx)) rotateY(var(--ty));
+    transition: transform 0.15s ease-out, box-shadow 0.4s ease;
+
+    /* Intense Shadow */
+    box-shadow:
+        0 40px 80px rgba(0, 0, 0, 0.6),
+        0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Dynamic Sheen */
+.sketchbook::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mx) var(--my),
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0) 50%);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+/* Paper Texture */
+.paper-texture {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Book Binding */
+.sketchbook::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+}
+
+.sketch-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    opacity: 0.98;
+}
+
+/* Navigation Controls - Minimal Futurist */
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateZ(30px);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    opacity: 0;
+    z-index: 30;
+    font-size: 1.2rem;
+}
+
+.sketchbook-wrapper.expanded .nav-button {
+    opacity: 1;
+}
+
+.nav-button:hover {
+    background: white;
+    color: black;
+    transform: translateY(-50%) translateZ(40px) scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.nav-prev {
+    left: -35px;
+}
+
+.nav-next {
+    right: -35px;
+}
+
+/* Interactive Hint */
+.interaction-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateZ(20px);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 1;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.sketchbook-wrapper.expanded .interaction-hint {
+    opacity: 0;
+}
+
+/* --- Mobile Optimization --- */
+@media (max-width: 768px) {
+    .sketchbook-section {
+        padding: var(--spacing-lg) var(--spacing-sm);
+        min-height: auto;
+        height: auto;
+        /* Adjust Aurora for mobile speed/size */
+        background-size: 200% 200%;
+    }
+
+    .glass-backdrop {
+        height: 98%;
+        width: 95%;
+    }
+
+    .sketchbook-container {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+
+    /* Text on top, centered */
+    .description-panel {
+        order: 0;
+        padding-right: 0;
+        margin-bottom: var(--spacing-xl);
+        text-align: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    /* Reset transform for mobile entry */
+    .description-panel {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    .description-panel.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .sketch-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .sketch-description {
+        font-size: 1rem;
+        max-width: 100%;
+        padding: 0 var(--spacing-sm);
+    }
+
+    /* Sketchbook below */
+    .sketchbook-wrapper {
+        order: 1;
+        width: 100%;
+        /* Reset horizontal translation */
+        transform: none;
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .sketchbook-wrapper.expanded {
+        transform: none;
+    }
+
+    .sketchbook {
+        width: 85vw;
+        height: 115vw;
+        /* Maintain aspect ratio roughly */
+        max-width: 350px;
+        max-height: 480px;
+
+        /* Reduce hover/tilt effect on mobile */
+        transform: none !important;
+    }
+
+    /* Simplified navigation for touch */
+    .nav-button {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        /* Always visible on mobile if expanded? Or keep hidden? 
+       Let's keep logic same but size fits better */
+    }
+
+    .nav-prev {
+        left: -10px;
+    }
+
+    .nav-next {
+        right: -10px;
+    }
+}
