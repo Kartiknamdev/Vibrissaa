@@ -552,49 +552,74 @@
     transform: translateY(0);
 }
 
-/* --- Mobile Grid Optimization --- */
+/* --- Mobile Polaroid Stack --- */
 @media (max-width: 768px) {
     .grid-content {
         display: block;
-        /* Disable grid for stacking */
-        padding: 80px 30px;
-        /* More padding */
+        padding: 100px 20px 40px;
+        /* Top padding for header space */
+        perspective: 1000px;
     }
 
     .grid-item {
-        width: 100%;
-        margin-bottom: 20px;
-        /* Sticky Stack Effect */
+        width: 85%;
+        /* Don't fill edge-to-edge */
+        margin: 0 auto -100px auto;
+        /* Centered & Tighter overlap */
+
+        /* Polaroid Style */
+        background: #fff;
+        padding: 10px 10px 40px 10px;
+        /* Classic bottom-heavy border */
+        border-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+
         position: sticky;
         top: 100px;
-        /* Cards stack here */
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
-        /* Shadow on TOP for overlap depth */
+        /* Stack base */
 
         transform-origin: center top;
         transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     }
 
-    /* Pop effect on Touch */
-    .grid-item:active {
-        transform: scale(0.95);
-        filter: brightness(1.2);
+    /* Cascading 'Jostle' for realism */
+    .grid-item:nth-child(odd) {
+        transform: rotate(-2deg);
+        margin-left: auto;
+        margin-right: 5%;
     }
 
-    /* Alternating subtle rotations for messy stack look */
     .grid-item:nth-child(even) {
         transform: rotate(1deg);
+        margin-left: 5%;
+        margin-right: auto;
     }
 
-    .grid-item:nth-child(odd) {
-        transform: rotate(-1deg);
+    /* Active State (Touch) */
+    .grid-item:active {
+        transform: scale(1.02) rotate(0deg) !important;
+        z-index: 100;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
     .grid-title {
-        transform: translateY(0);
-        /* Always show title on mobile */
-        padding: 20px;
-        font-size: 1.1rem;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 20%, transparent);
+        /* Title inside Polaroid footer */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0 10px 10px;
+        background: none;
+        color: #333;
+        /* Dark text on white paper */
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        text-align: center;
+        transform: none;
+        opacity: 0.7;
+    }
+
+    .grid-item:last-child {
+        margin-bottom: 50px;
     }
 }

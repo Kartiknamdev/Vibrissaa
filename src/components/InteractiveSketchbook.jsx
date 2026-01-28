@@ -29,7 +29,7 @@ const localArtworks = [
 ];
 
 const InteractiveSketchbook = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isGridOpen, setIsGridOpen] = useState(false);
 
@@ -91,6 +91,9 @@ const InteractiveSketchbook = () => {
     const handleBookClick = () => {
         if (!isExpanded) {
             setIsExpanded(true);
+        } else {
+            // If already expanded, clicking opens the grid
+            toggleGrid();
         }
     };
 
