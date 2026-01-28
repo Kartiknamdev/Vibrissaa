@@ -710,18 +710,36 @@
 
 /* Remaining batch together */
 
-/* --- Mobile Polaroid Stack (Premium Enhanced) --- */
+/* --- Mobile Horizontal Carousel (Instagram-Style) --- */
 @media (max-width: 768px) {
     .grid-content {
-        padding: 100px 20px 40px;
-        display: block;
+        /* Horizontal Scroll Container */
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 100px 0 60px 0;
+        gap: 0;
 
-        /* Magnetic Scroll Snap */
-        scroll-snap-type: y proximity;
-        scroll-padding-top: 100px;
+        /* Snap to Center */
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 10%;
+        /* Account for peek */
+
+        /* Smooth Momentum */
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+
+        /* Hide scrollbar */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    /* Disable Cinematic Focus on Mobile (confusing on touch) */
+    .grid-content::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Disable Cinematic Focus on Mobile */
     .grid-content:hover .grid-item {
         opacity: 1;
         filter: none;
@@ -729,86 +747,122 @@
     }
 
     .grid-item {
-        /* Revert to Polaroid style for mobile stack */
+        /* Carousel Card */
+        flex-shrink: 0;
+        width: 80%;
+        /* 80% width = 10% peek on each side */
+        max-width: 350px;
+        aspect-ratio: 3/4;
+
+        /* Polaroid Style */
         background: #fff;
-        padding: 10px 10px 40px 10px;
-        border: none;
-        backdrop-filter: none;
-
-        width: 85%;
-        margin: 0 auto -100px auto;
-        /* Stack overlap */
-        position: sticky;
-        top: 100px;
-
-        /* Magnetic Snap Alignment */
-        scroll-snap-align: start;
-        scroll-margin-top: 100px;
-
-        /* Stop desktop float */
-        animation: none;
-        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
-            filter 0.3s ease,
-            box-shadow 0.3s ease;
-    }
-
-    /* Progressive Blur now handled by JS scroll tracking */
-
-    /* Edge Glow on Top 3 Cards (Most Visible) */
-    .grid-item:nth-child(1),
-    .grid-item:nth-child(2),
-    .grid-item:nth-child(3) {
+        padding: 15px 15px 50px 15px;
+        border-radius: 12px;
         box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.4),
-            0 0 0 2px rgba(212, 175, 55, 0.3),
-            /* Gold edge */
-            0 0 20px rgba(212, 175, 55, 0.2);
-        /* Gold glow */
+            0 10px 30px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(212, 175, 55, 0.2);
+
+        /* Center Snap */
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+
+        /* Spacing from edges */
+        margin: 0 10%;
+
+        /* Transitions */
+        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+            box-shadow 0.3s ease,
+            opacity 0.3s ease;
+
+        /* Reset stacking styles */
+        position: relative;
+        top: auto;
+        backdrop-filter: none;
+        border: none;
     }
 
-    /* Swipe Gesture Ready (will be handled by JS) */
-    .grid-item.swiping {
-        transition: none;
-        z-index: 1000;
+    /* First card: left padding */
+    .grid-item:first-child {
+        margin-left: 10%;
+    }
+
+    /* Last card: right padding */
+    .grid-item:last-child {
+        margin-right: 10%;
+    }
+
+    /* Active/Centered Card Enhancement */
+    .grid-item.carousel-active {
+        transform: scale(1.05);
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.4),
+            0 0 0 2px rgba(212, 175, 55, 0.4),
+            0 0 30px rgba(212, 175, 55, 0.2);
+    }
+
+    /* Non-centered cards: slightly dimmed */
+    .grid-item:not(.carousel-active) {
+        opacity: 0.7;
+        transform: scale(0.95);
     }
 
     .grid-item img {
         margin: 0;
         width: 100%;
         height: 100%;
-        border-radius: 0;
+        object-fit: cover;
+        border-radius: 4px;
         animation: none;
-        /* No float on mobile img */
     }
 
-    /* Cascading 'Jostle' for mobile stack */
-    .grid-item:nth-child(odd) {
-        transform: rotate(-2deg);
-        margin-left: auto;
-        margin-right: 5%;
-    }
-
-    .grid-item:nth-child(even) {
-        transform: rotate(1deg);
-        margin-left: 5%;
-        margin-right: auto;
-    }
-
-    /* Mobile Touch Active */
+    /* Touch Active Feedback */
     .grid-item:active {
-        transform: scale(0.94) rotate(0deg) !important;
-        filter: none;
-        /* No blur on mobile */
-    }
-
-    .grid-item:last-child {
-        margin-bottom: 50px;
+        transform: scale(0.98) !important;
     }
 
     .grid-title {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
         color: #333;
-        transform: none;
         background: none;
-        padding-bottom: 10px;
+        padding: 0;
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transform: none;
+    }
+
+    /* Navigation Dots */
+    .carousel-dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 10;
+    }
+
+    .carousel-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .carousel-dot.active {
+        background: var(--color-gold-primary);
+        width: 24px;
+        border-radius: 4px;
+    }
+
+    /* Remove swipe gesture styles (keep only horizontal scroll) */
+    .grid-item.swiping {
+        transition: none;
+        z-index: auto;
     }
 }
