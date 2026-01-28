@@ -85,7 +85,59 @@ function App() {
         <ArtistStories />
       </section>
 
-      {/* Final CTA Section */}
+      
+
+      {/* Footer - Artist Story */}
+      <footer className="footer">
+        <div className="container">
+          {/* Artist Story Section */}
+          <div className="artist-story-section">
+            <p className="artist-intro">
+              Welcome to <strong>Vibrissa</strong>, a space where technology meets creativity.
+              This gallery belongs to <strong>Kartik Namdev</strong>, a cybersecurity student from Bhopal
+              who finds art in the balance between logic and imagination.
+            </p>
+
+            <h3 className="artist-story-title">The Artist's Journey</h3>
+            <p className="artist-description">
+              Kartik's work is a blend of three passions that define his perspective:
+            </p>
+
+            <div className="pillars-grid">
+              <div className="pillar">
+                <div className="pillar-icon">📷</div>
+                <h4 className="pillar-title">Photography</h4>
+                <p className="pillar-description">
+                  He uses his camera to capture the hidden geometry of the world.
+                  By focusing on structure and light, he finds a sense of order in everyday moments.
+                </p>
+              </div>
+
+              <div className="pillar">
+                <div className="pillar-icon">🎵</div>
+                <h4 className="pillar-title">Music</h4>
+                <p className="pillar-description">
+                  For Kartik, music is the rhythm behind the work. It sets the mood for every project,
+                  acting as the bridge that connects his technical mind to his creative soul.
+                </p>
+              </div>
+
+              <div className="pillar">
+                <div className="pillar-icon">✏️</div>
+                <h4 className="pillar-title">Drawing</h4>
+                <p className="pillar-description">
+                  This is where everything comes together. Kartik deconstructs complex subjects into
+                  simple shapes, carefully layering details until a unique vision emerges on the page.
+                </p>
+              </div>
+            </div>
+
+            <p className="artist-closing">
+              At <strong>Vibrissa</strong>, the art is more than just a picture—it's a look at the world
+              through a lens of precision and passion.
+            </p>
+          </div>
+          {/* Final CTA Section */}
       <section className="final-cta section">
         <div className="container">
           <div className="final-cta-content">
@@ -98,17 +150,36 @@ function App() {
               <input type="email" placeholder="Enter your email address" className="newsletter-input" />
               <button type="submit" className="newsletter-btn">Subscribe</button>
             </form>
-
-            <div className="footer-links">
-              <span>Instagram</span>
-              <span>Twitter</span>
-              <span>Artsy</span>
-            </div>
-
-            <p className="copyright">© 2026 Vibrissa. All rights reserved.</p>
           </div>
         </div>
       </section>
+
+          {/* Footer Bottom */}
+          <div className="footer-bottom">
+            <div className="footer-links">
+              <a
+                href="https://github.com/Kartiknamdev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link"
+              >
+                GitHub
+              </a>
+              <a
+                href="https://instagram.com/kartikknamdev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-link"
+              >
+                Instagram
+              </a>
+            </div>
+            
+
+            <p className="copyright">© 2026 Vibrissa by Kartik Namdev. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

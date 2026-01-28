@@ -102,6 +102,7 @@
     /* Bigger */
     background: linear-gradient(90deg, #d4af37, #f8f1d1);
     /* Gradient Text */
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: var(--spacing-md);
@@ -721,14 +722,15 @@
         padding: 100px 0 60px 0;
         gap: 0;
 
-        /* Snap to Center */
+        /* Roulette Wheel + Magnetic Snap */
         scroll-snap-type: x mandatory;
+        /* ALWAYS snap when stopped */
         scroll-padding: 0 10%;
-        /* Account for peek */
 
-        /* Smooth Momentum */
+        /* Ultra-Smooth Momentum (Low Friction) */
         -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
+        scroll-behavior: auto;
+        /* Natural physics during scroll */
 
         /* Hide scrollbar */
         scrollbar-width: none;
@@ -762,9 +764,10 @@
             0 10px 30px rgba(0, 0, 0, 0.3),
             0 0 0 1px rgba(212, 175, 55, 0.2);
 
-        /* Center Snap */
+        /* Soft Snap (Suggests center, doesn't force) */
         scroll-snap-align: center;
-        scroll-snap-stop: always;
+        scroll-snap-stop: normal;
+        /* Changed from 'always' to allow momentum through multiple cards */
 
         /* Spacing from edges */
         margin: 0 10%;
@@ -846,23 +849,99 @@
     }
 
     .carousel-dot {
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.4);
         border: 1px solid rgba(212, 175, 55, 0.3);
         transition: all 0.3s ease;
+        cursor: pointer;
+
+        /* Larger tap target */
+        position: relative;
+    }
+
+    .carousel-dot::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
     }
 
     .carousel-dot.active {
         background: var(--color-gold-primary);
-        width: 24px;
-        border-radius: 4px;
+        width: 32px;
+        /* Wider for active */
+        border-radius: 6px;
     }
 
     /* Remove swipe gesture styles (keep only horizontal scroll) */
     .grid-item.swiping {
         transition: none;
         z-index: auto;
+    }
+
+    /* Onboarding Hints (First-Time Users) */
+    .carousel-hint {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        color: var(--color-gold-primary);
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        pointer-events: none;
+        z-index: 20;
+
+        /* Fade in/out animation */
+        animation: hintFadeInOut 4s ease-in-out forwards;
+    }
+
+    .dots-hint {
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        color: var(--color-gold-primary);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        pointer-events: none;
+        z-index: 20;
+
+        animation: hintFadeInOut 4s ease-in-out forwards;
+        animation-delay: 0.5s;
+        opacity: 0;
+    }
+
+    @keyframes hintFadeInOut {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+
+        15% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        85% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
     }
 }

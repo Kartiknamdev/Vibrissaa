@@ -33,6 +33,7 @@ const InteractiveSketchbook = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isGridOpen, setIsGridOpen] = useState(false);
     const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
+    const [showHints, setShowHints] = useState(false);
 
     // Swipe-to-Dismiss State (kept for potential future use, but not active)
     const [swipeState, setSwipeState] = useState({
@@ -66,6 +67,21 @@ const InteractiveSketchbook = () => {
         return () => {
             document.body.style.overflow = '';
         };
+    }, [isGridOpen]);
+
+    // Show Onboarding Hints (Every Time)
+    useEffect(() => {
+        if (!isGridOpen || window.innerWidth > 768) return;
+
+        // Always show hints on mobile when grid opens
+        setShowHints(true);
+
+        // Auto-hide after 4 seconds
+        const timer = setTimeout(() => {
+            setShowHints(false);
+        }, 4000);
+
+        return () => clearTimeout(timer);
     }, [isGridOpen]);
 
     // Track Carousel Active Card (Mobile)
@@ -120,6 +136,55 @@ const InteractiveSketchbook = () => {
             if (rafId) cancelAnimationFrame(rafId);
         };
     }, [isGridOpen, artworks.length]);
+
+    // Interactive Dot Scrubbing (Mobile)
+    const handleDotClick = (index) => {
+        if (window.innerWidth > 768) return;
+
+        const gridContent = document.querySelector('.grid-content');
+        const targetCard = gridContent?.children[index];
+
+        if (targetCard) {
+            targetCard.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    };
+
+    const [dotScrubbing, setDotScrubbing] = useState(false);
+
+    const handleDotTouchStart = (e, index) => {
+        if (window.innerWidth > 768) return;
+        e.stopPropagation();
+        setDotScrubbing(true);
+        handleDotClick(index);
+    };
+
+    const handleDotTouchMove = (e) => {
+        if (!dotScrubbing || window.innerWidth > 768) return;
+
+        const touch = e.touches[0];
+        const dotElements = document.querySelectorAll('.carousel-dot');
+
+        // Find which dot we're currently hovering over
+        dotElements.forEach((dot, index) => {
+            const rect = dot.getBoundingClientRect();
+            if (
+                touch.clientX >= rect.left &&
+                touch.clientX <= rect.right &&
+                touch.clientY >= rect.top &&
+                touch.clientY <= rect.bottom
+            ) {
+                handleDotClick(index);
+            }
+        });
+    };
+
+    const handleDotTouchEnd = () => {
+        setDotScrubbing(false);
+    };
 
 
     // --- 3D Tilt Logic ---
@@ -290,13 +355,31 @@ const InteractiveSketchbook = () => {
                     )}
                 </div>
 
+                {/* Onboarding Hints (Every Time on Mobile) */}
+                {showHints && window.innerWidth <= 768 && (
+                    <>
+                        <div className="carousel-hint">
+                            👆 Swipe to browse
+                        </div>
+                        <div className="dots-hint">
+                            Tap or drag dots to navigate
+                        </div>
+                    </>
+                )}
+
                 {/* Navigation Dots (Mobile Only) */}
                 {!loading && window.innerWidth <= 768 && (
-                    <div className="carousel-dots">
+                    <div
+                        className="carousel-dots"
+                        onTouchMove={handleDotTouchMove}
+                        onTouchEnd={handleDotTouchEnd}
+                    >
                         {artworks.map((_, index) => (
                             <div
                                 key={index}
                                 className={`carousel-dot ${index === carouselActiveIndex ? 'active' : ''}`}
+                                onClick={() => handleDotClick(index)}
+                                onTouchStart={(e) => handleDotTouchStart(e, index)}
                             />
                         ))}
                     </div>

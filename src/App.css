@@ -444,3 +444,196 @@
     opacity: 0;
   }
 }
+
+/* ==========================================
+   FOOTER - ARTIST STORY (PREMIUM)
+   ========================================== */
+
+.footer {
+  position: relative;
+  background: linear-gradient(180deg,
+      rgba(10, 10, 15, 0.95) 0%,
+      rgba(5, 5, 10, 1) 100%);
+  padding: 120px 0 60px;
+  color: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+}
+
+/* Subtle Top Border/Glow */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(212, 175, 55, 0.4) 50%,
+      transparent 100%);
+}
+
+.artist-story-section {
+  max-width: 800px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+/* Intro Text */
+.artist-intro {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  line-height: 1.8;
+  margin-bottom: 60px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+}
+
+.artist-intro strong {
+  color: var(--color-gold-primary);
+  font-weight: 500;
+}
+
+/* Section Title */
+.artist-story-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.artist-description {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold-primary);
+  margin-bottom: 60px;
+  opacity: 0.8;
+}
+
+/* Pillars - Clean & Minimal */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin: 60px 0;
+  text-align: center;
+  position: relative;
+}
+
+/* Vertical dividers between pillars (Desktop) */
+.pillar:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: -20px;
+  height: 60%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.pillar {
+  padding: 20px;
+  /* No background/border for cleaner look */
+  transition: transform 0.4s ease;
+}
+
+.pillar:hover {
+  transform: translateY(-10px);
+}
+
+.pillar-icon {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+.pillar-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 16px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.pillar-description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.artist-closing {
+  font-size: 1.1rem;
+  font-family: var(--font-heading);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 80px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 40px;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  padding-bottom: 4px;
+  border-bottom: 1px solid transparent;
+}
+
+.footer-link:hover {
+  color: var(--color-gold-primary);
+  border-bottom-color: var(--color-gold-primary);
+}
+
+.copyright {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .pillar:not(:last-child)::after {
+    display: none;
+  }
+
+  .artist-intro {
+    font-size: 1rem;
+    padding: 0 20px;
+  }
+
+  .artist-story-title {
+    font-size: 2rem;
+  }
+}
