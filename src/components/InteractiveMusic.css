@@ -1,0 +1,324 @@
+/* Music Specific Overrides */
+
+/* Container for Art + Controls */
+.music-center-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    /* Reduced gap */
+    width: 100%;
+}
+
+/* Player Controls Container */
+.player-controls-container {
+    width: 100%;
+    /* Integrated into text panel, so remove card styling */
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.mobile-controls-only {
+    display: none;
+}
+
+/* Square Orientation for Album Art */
+.music-mode .main-artwork.square {
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 1px 0 rgba(255, 255, 255, 0.1) inset;
+    z-index: 2;
+    position: relative;
+    background: #111;
+
+    /* Responsive sizing */
+    width: 100%;
+    max-width: 380px;
+    /* Default desktop max */
+}
+
+/* --- Mobile / Compact Screen Adjustments --- */
+@media (max-height: 800px),
+(max-width: 768px) {
+    .music-center-column {
+        gap: 15px;
+    }
+
+    .music-mode .main-artwork.square {
+        max-width: 300px;
+        /* Smaller art on mobile */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Hide Desktop Controls */
+    .desktop-controls-only {
+        display: none;
+    }
+
+    /* Show Mobile Controls & Restore Card Style */
+    .mobile-controls-only {
+        display: block !important;
+        margin-top: 20px;
+
+        /* Restore Glass Card Look */
+        background: rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px;
+        padding: 0 15px !important;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .mobile-controls-only .interactive-controls {
+        justify-content: center !important;
+        /* Center align on mobile */
+    }
+
+    .sketch-title {
+        font-size: 1.5rem !important;
+        /* Force smaller title */
+        margin-bottom: 5px !important;
+    }
+
+    .sketch-artist {
+        font-size: 0.9rem !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+/* Play Overlay on Cover */
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.book-left:hover .play-overlay {
+    opacity: 1;
+}
+
+.play-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(212, 175, 55, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 24px;
+    transform: scale(0.8);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-overlay:hover .play-btn {
+    transform: scale(1);
+}
+
+/* Artist Text */
+.sketch-artist {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-gold-primary);
+    margin-top: -10px;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Player UI */
+.player-ui {
+    margin: 20px 0;
+    width: 100%;
+}
+
+/* Progress Bar - Sleek Line */
+.player-ui .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    height: 3px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: height 0.2s ease;
+}
+
+.player-ui .progress-bar:hover {
+    height: 5px;
+    /* Expand on hover */
+}
+
+.player-ui .progress-fill {
+    background: var(--color-gold-primary);
+    box-shadow: 0 0 10px var(--color-gold-primary);
+    height: 100%;
+}
+
+.player-ui .time-stamps {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+}
+
+/* Controls Row */
+.interactive-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* Align left */
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Standard Buttons (Prev/Next) */
+.control-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.control-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.1);
+}
+
+/* Play/Pause Main Button - The Star */
+.control-btn.play-main {
+    /* Premium Metallic Gradient */
+    background: linear-gradient(135deg, #f8f1d1 0%, #d4af37 50%, #b49321 100%);
+    color: #1a1a1a;
+
+    font-size: 1.2rem;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+
+    /* 3D Bevel & Glow */
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.4),
+        /* Deep Shadow */
+        inset 0 2px 0 rgba(255, 255, 255, 0.5),
+        /* Top Highlight */
+        inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+        /* Bottom Shading */
+        0 0 15px rgba(212, 175, 55, 0.3);
+    /* Outer Glow */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle shine animation */
+.control-btn.play-main::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.8), transparent);
+    opacity: 0.3;
+    border-radius: 50%;
+}
+
+.control-btn.play-main:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow:
+        0 15px 30px rgba(0, 0, 0, 0.5),
+        inset 0 2px 0 rgba(255, 255, 255, 0.6),
+        0 0 25px rgba(212, 175, 55, 0.6);
+    /* Brighter Glow */
+    filter: brightness(1.1);
+}
+
+.control-btn.play-main:active {
+    transform: scale(0.95);
+    box-shadow:
+        0 5px 10px rgba(0, 0, 0, 0.3),
+        inset 0 2px 5px rgba(0, 0, 0, 0.3);
+    /* Pressed In */
+}
+
+/* Active State for Pause (Playing) */
+.control-btn.play-main.active {
+    /* Slightly different gradient to show active state */
+    background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.4),
+        inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid Override - Square Cards */
+.music-grid .grid-item {
+    aspect-ratio: 1/1;
+}
+
+.music-grid .skeleton-grid-item {
+    aspect-ratio: 1/1;
+}
+
+/* Play Icon on Grid Items */
+.play-icon-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-gold-primary);
+    font-size: 12px;
+    border: 1px solid var(--color-gold-primary);
+    opacity: 0.8;
+}
+
+/* Mobile Carousel - Square Cards */
+@media (max-width: 768px) {
+    .music-grid .grid-content .grid-item {
+        width: 70%;
+        /* Narrower for square */
+        aspect-ratio: 1/1;
+        margin: 0 15%;
+    }
+
+    .music-grid .grid-content .grid-item:first-child {
+        margin-left: 15%;
+    }
+
+    .music-grid .grid-content .grid-item:last-child {
+        margin-right: 15%;
+    }
+}

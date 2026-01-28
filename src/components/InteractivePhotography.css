@@ -1,0 +1,34 @@
+/* Photography Specific Overrides */
+
+/* Landscape Orientation for Book View */
+.photography-mode .main-artwork.landscape {
+    aspect-ratio: 4/3;
+    object-fit: cover;
+}
+
+/* Grid Override - Landscape Cards */
+.photography-grid .grid-item {
+    aspect-ratio: 4/3;
+}
+
+.photography-grid .skeleton-grid-item {
+    aspect-ratio: 4/3;
+}
+
+/* Mobile Carousel - Wider Cards */
+@media (max-width: 768px) {
+    .photography-grid .grid-content .grid-item {
+        width: 85%;
+        /* Slightly wider for landscape */
+        aspect-ratio: 4/3;
+        margin: 0 7.5%;
+    }
+
+    .photography-grid .grid-content .grid-item:first-child {
+        margin-left: 7.5%;
+    }
+
+    .photography-grid .grid-content .grid-item:last-child {
+        margin-right: 7.5%;
+    }
+}

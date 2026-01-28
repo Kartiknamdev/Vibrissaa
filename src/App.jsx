@@ -3,6 +3,8 @@ import './App.css'
 import HeroAnimation from './components/HeroAnimation';
 import InteractiveSketchbook from './components/InteractiveSketchbook';
 import ArtistStories from './components/ArtistStories';
+import InteractivePhotography from './components/InteractivePhotography';
+import InteractiveMusic from './components/InteractiveMusic';
 
 // Import artwork images
 import artworkAbstract from './assets/artwork_abstract_gold.png'
@@ -12,23 +14,29 @@ import artworkPortrait from './assets/artwork_portrait.png'
 function App() {
   const [heroOpacity, setHeroOpacity] = useState(1);
   const [heroTransform, setHeroTransform] = useState(0);
+  const [heroScale, setHeroScale] = useState(1);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const fadeStart = 300; // Approx 12 frames in
+      const fadeStart = 50; // Start almost immediately after scroll unlocks
 
       let newOpacity = 1;
       let newTransform = 0;
+      let newScale = 1;
 
       if (scrollY > fadeStart) {
-        // Fade out over next 400px
-        newOpacity = Math.max(0, 1 - (scrollY - fadeStart) / 400);
-        newTransform = (scrollY - fadeStart) * 0.35;
+        // Fade out over next 300px
+        newOpacity = Math.max(0, 1 - (scrollY - fadeStart) / 300);
+        // Move slightly up
+        newTransform = (scrollY - fadeStart) * 0.2;
+        // Zoom in (Come forward)
+        newScale = 1 + (scrollY - fadeStart) * 0.001;
       }
 
       setHeroOpacity(newOpacity);
       setHeroTransform(newTransform);
+      setHeroScale(newScale);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -44,7 +52,7 @@ function App() {
           className="hero-content"
           style={{
             opacity: heroOpacity,
-            transform: `translateY(-${heroTransform}px)`,
+            transform: `translateY(-${heroTransform}px) scale(${heroScale})`,
             pointerEvents: heroOpacity === 0 ? 'none' : 'auto'
           }}
         >
@@ -65,6 +73,9 @@ function App() {
         </div>
       </section>
 
+
+
+
       {/* Features Section (Sketchbook) */}
       <section className="features section">
         <div className="container">
@@ -80,12 +91,36 @@ function App() {
         </div>
       </section>
 
-      {/* Artist Stories Section */}
+      {/* Photography Section */}
       <section className="section">
-        <ArtistStories />
+        <div className="container">
+          <div className="section-header">
+            <p className="section-subtitle">From the Lens</p>
+            <h2 className="section-title">Hidden Geometry</h2>
+            <p className="hero-description">
+              Finding order, structure, and light in the chaos of the everyday.
+            </p>
+          </div>
+          <InteractivePhotography />
+        </div>
       </section>
 
-      
+      {/* Music Section */}
+      <section className="section">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-subtitle">Sonic Landscapes</p>
+            <h2 className="section-title">Rhythm & Soul</h2>
+            <p className="hero-description">
+              The soundtrack to the creative mind. Listen to the moods that drive the art.
+            </p>
+          </div>
+          <InteractiveMusic />
+        </div>
+      </section>
+
+
+
 
       {/* Footer - Artist Story */}
       <footer className="footer">
@@ -94,7 +129,7 @@ function App() {
           <div className="artist-story-section">
             <p className="artist-intro">
               Welcome to <strong>Vibrissa</strong>, a space where technology meets creativity.
-              This gallery belongs to <strong>Kartik Namdev</strong>, a cybersecurity student from Bhopal
+              This gallery belongs to <strong>Kartik Namdev</strong>, a computer science student from Bhopal
               who finds art in the balance between logic and imagination.
             </p>
 
@@ -138,21 +173,16 @@ function App() {
             </p>
           </div>
           {/* Final CTA Section */}
-      <section className="final-cta section">
-        <div className="container">
-          <div className="final-cta-content">
-            <h2 className="final-cta-title">Curate Your World</h2>
-            <p className="final-cta-description">
-              Join our collector's circle. Receive exclusive early access to new releases.
-            </p>
+          <section className="final-cta section">
+            <div className="container">
+              <div className="final-cta-content">
+                <h2 className="final-cta-title">Curate Your World</h2>
 
-            <form className="newsletter-form" onSubmit={(e) => e.preventDefault()}>
-              <input type="email" placeholder="Enter your email address" className="newsletter-input" />
-              <button type="submit" className="newsletter-btn">Subscribe</button>
-            </form>
-          </div>
-        </div>
-      </section>
+
+
+              </div>
+            </div>
+          </section>
 
           {/* Footer Bottom */}
           <div className="footer-bottom">
@@ -174,7 +204,7 @@ function App() {
                 Instagram
               </a>
             </div>
-            
+
 
             <p className="copyright">© 2026 Vibrissa by Kartik Namdev. All rights reserved.</p>
           </div>

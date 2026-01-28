@@ -80,6 +80,8 @@
 /* Description Typography */
 .description-panel {
     flex: 1;
+    padding-left: 60px;
+    /* Prevent text from hitting edge */
     padding-right: var(--spacing-xl);
     display: flex;
     flex-direction: column;
@@ -322,6 +324,8 @@
     .description-panel {
         order: 0;
         padding-right: 0;
+        padding-left: 0;
+        /* Reset desktop padding */
         margin-bottom: var(--spacing-xl);
         text-align: center;
         align-items: center;

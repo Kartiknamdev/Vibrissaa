@@ -43,8 +43,8 @@ const InteractiveSketchbook = () => {
         targetElement: null
     });
 
-    // Fetch remote data
-    const { data: remoteArtworks, loading } = useContentful();
+    // Fetch remote data with 'sketchbookEntry' tag
+    const { data: remoteArtworks, loading } = useContentful('sketchbookEntry');
 
     // Use remote data if available, otherwise fallback to local
     const artworks = (remoteArtworks && remoteArtworks.length > 0) ? remoteArtworks : localArtworks;
