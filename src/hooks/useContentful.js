@@ -29,31 +29,35 @@ const useContentful = () => {
 
         const fetchEntries = async () => {
             try {
-                console.log("[Contentful Debug] Fetching entries for content_type: 'sketchbookEntry'...");
-                const response = await client.getEntries({
-                    content_type: 'sketchbookEntry',
+                console.log("[Contentful Debug] Fetching ASSETS with tag: 'sketchbookEntry'...");
+
+                // Fetch Assets (Images) directly that have the tag 'sketchbookEntry'
+                const response = await client.getAssets({
+                    'metadata.tags.sys.id[in]': 'sketchbookEntry',
+                    order: '-sys.createdAt', // Newest uploads first
                 });
 
                 console.log("[Contentful Debug] Raw Response:", response);
 
                 if (response.items.length === 0) {
-                    console.warn("[Contentful Debug] No items found. Check if:");
-                    console.warn("1. Content Type ID is exactly 'sketchbookEntry'");
-                    console.warn("2. Entries are currently 'Published' (not Draft)");
+                    console.warn("[Contentful Debug] No assets found. Check if:");
+                    console.warn("1. You uploaded images to 'Media' tab.");
+                    console.warn("2. You created a Tag named 'sketchbookEntry' (Settings -> Tags).");
+                    console.warn("3. You tagged the images with 'sketchbookEntry'.");
+                    console.warn("4. You Published the images.");
                 }
 
-                const sanitizedData = response.items.map((item) => {
-                    const { title, description, image } = item.fields;
-                    // Log each item to see fields
-                    console.log("[Contentful Debug] Processing Item:", item.fields);
+                const sanitizedData = response.items.map((asset) => {
+                    // Use the built-in Title and Description from the Asset
+                    const { title, description, file } = asset.fields;
 
                     return {
-                        id: item.sys.id,
-                        title,
-                        description,
-                        image: image?.fields?.file?.url ? `https:${image.fields.file.url}` : null,
+                        id: asset.sys.id,
+                        title: title || "Untitled Sketch",
+                        description: description || "No description provided.",
+                        image: file?.url ? `https:${file.url}` : null,
                     };
-                }).filter(item => item.image); // Only keep items with valid images
+                }).filter(item => item.image); // Only keep valid images
 
                 setData(sanitizedData);
                 setLoading(false);

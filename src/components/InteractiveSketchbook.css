@@ -482,6 +482,7 @@
 
     /* Smooth Scroll */
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Bouncy List Items */
@@ -542,4 +543,51 @@
 
 .grid-item:hover .grid-title {
     transform: translateY(0);
+}
+
+/* --- Mobile Grid Optimization --- */
+@media (max-width: 768px) {
+    .grid-content {
+        display: block;
+        /* Disable grid for stacking */
+        padding: 80px 30px;
+        /* More padding */
+    }
+
+    .grid-item {
+        width: 100%;
+        margin-bottom: 20px;
+        /* Sticky Stack Effect */
+        position: sticky;
+        top: 100px;
+        /* Cards stack here */
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        /* Shadow on TOP for overlap depth */
+
+        transform-origin: center top;
+        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    /* Pop effect on Touch */
+    .grid-item:active {
+        transform: scale(0.95);
+        filter: brightness(1.2);
+    }
+
+    /* Alternating subtle rotations for messy stack look */
+    .grid-item:nth-child(even) {
+        transform: rotate(1deg);
+    }
+
+    .grid-item:nth-child(odd) {
+        transform: rotate(-1deg);
+    }
+
+    .grid-title {
+        transform: translateY(0);
+        /* Always show title on mobile */
+        padding: 20px;
+        font-size: 1.1rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 20%, transparent);
+    }
 }
