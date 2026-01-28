@@ -439,6 +439,13 @@
     justify-content: center;
     align-items: center;
 
+    /* Performance & Scroll Fixes */
+    will-change: clip-path;
+    /* Prevents repaint flash */
+    overscroll-behavior: contain;
+    /* Stops background scroll chain */
+    -webkit-overflow-scrolling: touch;
+
     /* "Tear Drop" Animation Start State */
     clip-path: circle(0% at 50% 90%);
     /* Starts at bottom center */

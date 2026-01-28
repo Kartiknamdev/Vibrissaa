@@ -47,6 +47,19 @@ const InteractiveSketchbook = () => {
         }
     }, [artworks, currentIndex]);
 
+    // Lock Body Scroll when Grid is Open
+    useEffect(() => {
+        if (isGridOpen) {
+            document.body.style.overflow = 'hidden';
+            // Removed position: fixed to prevent scroll jump
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isGridOpen]);
+
 
     // --- 3D Tilt Logic ---
     const handleMouseMove = (e) => {
