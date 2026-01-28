@@ -33,6 +33,14 @@ const InteractiveSketchbook = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isGridOpen, setIsGridOpen] = useState(false);
 
+    // Swipe-to-Dismiss State
+    const [swipeState, setSwipeState] = useState({
+        isSwiping: false,
+        startX: 0,
+        currentX: 0,
+        targetElement: null
+    });
+
     // Fetch remote data
     const { data: remoteArtworks, loading } = useContentful();
 
@@ -51,7 +59,6 @@ const InteractiveSketchbook = () => {
     useEffect(() => {
         if (isGridOpen) {
             document.body.style.overflow = 'hidden';
-            // Removed position: fixed to prevent scroll jump
         } else {
             document.body.style.overflow = '';
         }
@@ -59,6 +66,113 @@ const InteractiveSketchbook = () => {
             document.body.style.overflow = '';
         };
     }, [isGridOpen]);
+
+    // Dynamic Progressive Blur (Mobile Only)
+    useEffect(() => {
+        if (!isGridOpen || window.innerWidth > 768) return;
+
+        const gridContent = document.querySelector('.grid-content');
+        const gridItems = document.querySelectorAll('.grid-item');
+
+        const updateBlur = () => {
+            const stickyTop = 100; // Matches CSS sticky top value
+
+            gridItems.forEach((item, index) => {
+                const rect = item.getBoundingClientRect();
+                const distanceFromTop = rect.top - stickyTop;
+
+                // Calculate blur amount (0px when at sticky point, max 4px deeper in stack)
+                // Cards above the sticky point: no blur
+                // Cards at sticky point: no blur
+                // Cards below: progressive blur based on distance
+                let blurAmount = 0;
+                let opacity = 1;
+
+                if (distanceFromTop > 0) {
+                    // Card is below focal point - apply progressive blur
+                    // Use gentler curve: sqrt for smoother progression
+                    const normalizedDistance = Math.min(distanceFromTop / 100, 10);
+                    blurAmount = Math.sqrt(normalizedDistance) * 0.95; // Max ~3px blur
+                    opacity = Math.max(1 - (distanceFromTop / 500), 0.95); // Slight fade
+                }
+
+                item.style.filter = blurAmount > 0.1 ? `blur(${blurAmount}px)` : 'none';
+                item.style.opacity = opacity;
+            });
+        };
+
+        // Update on scroll (throttled with rAF)
+        let rafId;
+        const handleScroll = () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(updateBlur);
+        };
+
+        gridContent?.addEventListener('scroll', handleScroll, { passive: true });
+        updateBlur(); // Initial render
+
+        return () => {
+            gridContent?.removeEventListener('scroll', handleScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+        };
+    }, [isGridOpen]);
+
+    // Swipe-to-Dismiss Handlers (Mobile Only)
+    const handleTouchStart = (e, element) => {
+        if (window.innerWidth > 768) return; // Desktop: disabled
+
+        const touch = e.touches[0];
+        setSwipeState({
+            isSwiping: true,
+            startX: touch.clientX,
+            currentX: touch.clientX,
+            targetElement: element
+        });
+
+        element.classList.add('swiping');
+    };
+
+    const handleTouchMove = (e) => {
+        if (!swipeState.isSwiping || window.innerWidth > 768) return;
+
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - swipeState.startX;
+        const rotation = deltaX * 0.1; // Subtle rotation
+
+        // Apply transform live
+        swipeState.targetElement.style.transform =
+            `translateX(${deltaX}px) rotate(${rotation}deg)`;
+
+        setSwipeState(prev => ({ ...prev, currentX: touch.clientX }));
+    };
+
+    const handleTouchEnd = () => {
+        if (!swipeState.isSwiping || window.innerWidth > 768) return;
+
+        const deltaX = swipeState.currentX - swipeState.startX;
+        const threshold = 120; // Minimum swipe distance
+
+        if (Math.abs(deltaX) > threshold) {
+            // Dismiss: Fly off screen
+            const direction = deltaX > 0 ? 1 : -1;
+            swipeState.targetElement.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease';
+            swipeState.targetElement.style.transform =
+                `translateX(${direction * window.innerWidth}px) rotate(${direction * 45}deg)`;
+            swipeState.targetElement.style.opacity = '0';
+
+            // Remove from DOM after animation
+            setTimeout(() => {
+                swipeState.targetElement.remove();
+            }, 400);
+        } else {
+            // Snap back
+            swipeState.targetElement.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            swipeState.targetElement.style.transform = '';
+        }
+
+        swipeState.targetElement.classList.remove('swiping');
+        setSwipeState({ isSwiping: false, startX: 0, currentX: 0, targetElement: null });
+    };
 
 
     // --- 3D Tilt Logic ---
@@ -206,6 +320,9 @@ const InteractiveSketchbook = () => {
                             key={art.id || index}
                             className="grid-item"
                             onClick={() => handleGridSelect(index)}
+                            onTouchStart={(e) => handleTouchStart(e, e.currentTarget)}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
                             style={{ animationDelay: `${index * 0.05}s` }}
                         >
                             <img src={art.image} alt={art.title} />

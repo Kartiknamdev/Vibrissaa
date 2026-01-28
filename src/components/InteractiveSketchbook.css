@@ -482,57 +482,170 @@
     overflow-y: auto;
     padding: 100px var(--spacing-xl);
     display: grid;
-    /* Adapts to count: Items stretch to fill space evenly */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    max-width: 1400px;
+    /* High Density Grid (Show ~30 cards) */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 1800px;
+    /* Use full width */
+    padding: 120px 40px;
 
     /* Smooth Scroll */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Bouncy List Items */
-.grid-item {
-    aspect-ratio: 3/4;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(50px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+/* --- GLOBAL KINETIC PHYSICS (60FPS OPTIMIZED) --- */
+
+/* 1. Holographic Sheen Loop (GPU Accelerated) */
+.grid-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(120deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.6) 50%,
+            transparent 70%);
+    transform: skewX(-20deg) translateX(-150%);
+    /* Start position */
+    pointer-events: none;
+    animation: appleSheen 6s infinite ease-in-out;
+    mix-blend-mode: soft-light;
+    will-change: transform;
+    /* Hint browser */
 }
 
-.grid-overlay.open .grid-item {
-    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+@keyframes appleSheen {
 
-@keyframes bounceIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    0%,
+    30% {
+        transform: skewX(-20deg) translateX(-150%);
+    }
+
+    50% {
+        transform: skewX(-20deg) translateX(150%);
+    }
+
+    100% {
+        transform: skewX(-20deg) translateX(150%);
     }
 }
 
+/* 2. Floating / Breathing Animation (Moved to Image to fix Conflict) */
+@keyframes bioFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1.02);
+    }
+
+    50% {
+        transform: translateY(-5px) scale(1.02);
+    }
+}
+
+/* 3. The "iOS Spring" Release & Hover */
+.grid-item {
+    /* Liquid Glass Card Base */
+    background: rgba(255, 255, 255, 0.05);
+    /* Ultra sheer */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+
+    /* Enforce 3:4 Aspect Ratio */
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+
+    /* Transition for Hover/Focus */
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+        opacity 0.4s ease,
+        filter 0.4s ease,
+        box-shadow 0.4s ease;
+
+    /* Performance Hints */
+    will-change: transform, opacity, filter;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    /* Force GPU Layer */
+}
+
+/* Float the IMAGE inside, not the container, so hover transform is clean */
 .grid-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 8px;
+    margin: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+
+    animation: bioFloat 6s ease-in-out infinite;
+    /* Independent transition */
     transition: transform 0.5s ease;
+
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
-.grid-item:hover {
+/* Variation in float speeds */
+.grid-item:nth-child(even) img {
+    animation-duration: 7s;
+}
+
+.grid-item:nth-child(3n) img {
+    animation-duration: 8s;
+}
+
+
+/* --- CINEMATIC FOCUS EFFECT --- */
+
+/* When hovering the GRID (Container), dim ALL items */
+.grid-content:hover .grid-item {
+    opacity: 0.8;
+    filter: blur(1px) grayscale(0.5);
+    transform: scale(0.98);
+}
+
+/* Then restore/highlight ONLY the hovered item */
+.grid-content .grid-item:hover {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.15) translateY(-10px) !important;
+    z-index: 100;
+
+    /* Strong Pop Shadow */
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(212, 175, 55, 0.6),
+        /* Gold ring */
+        0 0 30px rgba(212, 175, 55, 0.3);
+    /* Gold glow */
+}
+
+/* Stop image float on hover to prioritize focus */
+.grid-content .grid-item:hover img {
+    animation-play-state: paused;
     transform: scale(1.05);
-    /* Slight lift */
-    border-color: var(--color-gold-primary);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    z-index: 2;
 }
 
-.grid-item:hover img {
-    transform: scale(1.1);
+/* "Water Snap" Click Interaction */
+.grid-item:active {
+    /* Dissolve Effect */
+    transform: scale(0.95) !important;
+    filter: blur(4px) brightness(1.5) !important;
+    /* Flash */
+    transition: all 0.1s ease;
 }
 
 .grid-title {
@@ -540,10 +653,13 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 15px;
+    padding: 20px;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
     color: white;
+    font-family: var(--font-body);
     font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
     transform: translateY(100%);
     transition: transform 0.3s;
 }
@@ -552,37 +668,120 @@
     transform: translateY(0);
 }
 
-/* --- Mobile Polaroid Stack --- */
+/* Fix Open Stutter: Staggered Entry + Delay */
+.grid-overlay.open .grid-item {
+    animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 0.2s;
+    /* Wait for clip-path to gain momentum */
+}
+
+/* Stagger for first 10 items to prevent 'Wall of Lag' */
+.grid-overlay.open .grid-item:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+.grid-overlay.open .grid-item:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.grid-overlay.open .grid-item:nth-child(3) {
+    animation-delay: 0.25s;
+}
+
+.grid-overlay.open .grid-item:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.grid-overlay.open .grid-item:nth-child(5) {
+    animation-delay: 0.35s;
+}
+
+.grid-overlay.open .grid-item:nth-child(6) {
+    animation-delay: 0.4s;
+}
+
+.grid-overlay.open .grid-item:nth-child(7) {
+    animation-delay: 0.45s;
+}
+
+.grid-overlay.open .grid-item:nth-child(n+8) {
+    animation-delay: 0.5s;
+}
+
+/* Remaining batch together */
+
+/* --- Mobile Polaroid Stack (Premium Enhanced) --- */
 @media (max-width: 768px) {
     .grid-content {
-        display: block;
         padding: 100px 20px 40px;
-        /* Top padding for header space */
-        perspective: 1000px;
+        display: block;
+
+        /* Magnetic Scroll Snap */
+        scroll-snap-type: y proximity;
+        scroll-padding-top: 100px;
+    }
+
+    /* Disable Cinematic Focus on Mobile (confusing on touch) */
+    .grid-content:hover .grid-item {
+        opacity: 1;
+        filter: none;
+        transform: none;
     }
 
     .grid-item {
-        width: 85%;
-        /* Don't fill edge-to-edge */
-        margin: 0 auto -100px auto;
-        /* Centered & Tighter overlap */
-
-        /* Polaroid Style */
+        /* Revert to Polaroid style for mobile stack */
         background: #fff;
         padding: 10px 10px 40px 10px;
-        /* Classic bottom-heavy border */
-        border-radius: 4px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        border: none;
+        backdrop-filter: none;
 
+        width: 85%;
+        margin: 0 auto -100px auto;
+        /* Stack overlap */
         position: sticky;
         top: 100px;
-        /* Stack base */
 
-        transform-origin: center top;
-        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        /* Magnetic Snap Alignment */
+        scroll-snap-align: start;
+        scroll-margin-top: 100px;
+
+        /* Stop desktop float */
+        animation: none;
+        transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+            filter 0.3s ease,
+            box-shadow 0.3s ease;
     }
 
-    /* Cascading 'Jostle' for realism */
+    /* Progressive Blur now handled by JS scroll tracking */
+
+    /* Edge Glow on Top 3 Cards (Most Visible) */
+    .grid-item:nth-child(1),
+    .grid-item:nth-child(2),
+    .grid-item:nth-child(3) {
+        box-shadow:
+            0 4px 15px rgba(0, 0, 0, 0.4),
+            0 0 0 2px rgba(212, 175, 55, 0.3),
+            /* Gold edge */
+            0 0 20px rgba(212, 175, 55, 0.2);
+        /* Gold glow */
+    }
+
+    /* Swipe Gesture Ready (will be handled by JS) */
+    .grid-item.swiping {
+        transition: none;
+        z-index: 1000;
+    }
+
+    .grid-item img {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        animation: none;
+        /* No float on mobile img */
+    }
+
+    /* Cascading 'Jostle' for mobile stack */
     .grid-item:nth-child(odd) {
         transform: rotate(-2deg);
         margin-left: auto;
@@ -595,31 +794,21 @@
         margin-right: auto;
     }
 
-    /* Active State (Touch) */
+    /* Mobile Touch Active */
     .grid-item:active {
-        transform: scale(1.02) rotate(0deg) !important;
-        z-index: 100;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    }
-
-    .grid-title {
-        /* Title inside Polaroid footer */
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 0 10px 10px;
-        background: none;
-        color: #333;
-        /* Dark text on white paper */
-        font-family: var(--font-body);
-        font-size: 0.8rem;
-        text-align: center;
-        transform: none;
-        opacity: 0.7;
+        transform: scale(0.94) rotate(0deg) !important;
+        filter: none;
+        /* No blur on mobile */
     }
 
     .grid-item:last-child {
         margin-bottom: 50px;
+    }
+
+    .grid-title {
+        color: #333;
+        transform: none;
+        background: none;
+        padding-bottom: 10px;
     }
 }
